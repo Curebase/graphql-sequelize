@@ -52,7 +52,7 @@ function resolverFactory(targetMaybeThunk, options = {}) {
       , list = options.list ||
         type instanceof GraphQLList ||
         type instanceof GraphQLNonNull && type.ofType instanceof GraphQLList ||
-        (args.pagination || false);
+        typeof args.pagination !== 'undefined';
 
     let targetAttributes = Object.keys(model.rawAttributes)
       , findOptions = argsToFindOptions(args, targetAttributes);
@@ -108,8 +108,8 @@ function resolverFactory(targetMaybeThunk, options = {}) {
           });
         }
       }
-      
-      if (list && args.pagination) {
+
+      if (list && args && args.pagination) {
         const paginatedFindOptions = {
           ...findOptions,
           ...applyPagination(args.pagination),
