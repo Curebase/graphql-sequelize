@@ -52,7 +52,7 @@ function resolverFactory(targetMaybeThunk, options = {}) {
       , list = options.list ||
         type instanceof GraphQLList ||
         type instanceof GraphQLNonNull && type.ofType instanceof GraphQLList ||
-        (args?.pagination ?? false);
+        (args.pagination || false);
 
     let targetAttributes = Object.keys(model.rawAttributes)
       , findOptions = argsToFindOptions(args, targetAttributes);
