@@ -51,7 +51,8 @@ function resolverFactory(targetMaybeThunk, options = {}) {
       , type = info.returnType
       , list = options.list ||
         type instanceof GraphQLList ||
-        type instanceof GraphQLNonNull && type.ofType instanceof GraphQLList;
+        type instanceof GraphQLNonNull && type.ofType instanceof GraphQLList ||
+        (args?.pagination ?? false);
 
     let targetAttributes = Object.keys(model.rawAttributes)
       , findOptions = argsToFindOptions(args, targetAttributes);
@@ -107,12 +108,30 @@ function resolverFactory(targetMaybeThunk, options = {}) {
           });
         }
       }
+      
+      if (list && args?.pagination) {
+        const paginatedFindOptions = {
+          ...findOptions,
+          ...applyPagination(args.pagination),
+        };
+
+        return model['findAndCountAll'](paginatedFindOptions);
+      }
 
       return model[list ? 'findAll' : 'findOne'](findOptions);
     }).then(function (result) {
       return options.after(result, args, context, info);
     });
   };
+}
+
+function applyPagination(pagination) {
+  const DEFAULT_PAGE_SIZE = 10;
+
+  const limit = pagination.size ?? DEFAULT_PAGE_SIZE;
+  const offset = (pagination.page - 1) * limit;
+
+  return { limit, offset };
 }
 
 resolverFactory.contextToOptions = {};
