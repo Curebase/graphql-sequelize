@@ -109,7 +109,7 @@ function resolverFactory(targetMaybeThunk, options = {}) {
         }
       }
       
-      if (list && args?.pagination) {
+      if (list && args.pagination) {
         const paginatedFindOptions = {
           ...findOptions,
           ...applyPagination(args.pagination),
@@ -128,7 +128,7 @@ function resolverFactory(targetMaybeThunk, options = {}) {
 function applyPagination(pagination) {
   const DEFAULT_PAGE_SIZE = 10;
 
-  const limit = pagination.size ?? DEFAULT_PAGE_SIZE;
+  const limit = pagination.size || DEFAULT_PAGE_SIZE;
   const offset = (pagination.page - 1) * limit;
 
   return { limit, offset };
